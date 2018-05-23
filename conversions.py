@@ -66,6 +66,7 @@ def sph2car(r, phi, theta):
     return (x, y, z)
 
 def car2cyl(x, y, z):
+    """Convert cartesian to cylindrical coordinates."""
     rho = np.sqrt(x**2 + y**2)
     phi = np.arctan2(y, x)
 
@@ -75,16 +76,19 @@ def car2cyl(x, y, z):
     return rho, phi, z
 
 def sph2cyl(r, phi, theta):
+    """Convert spherical to cylindrical coordinates."""
     z = r * np.sin(theta)
     rho = r * np.cos(theta)
     return rho, phi, z
 
 def cyl2car(rho, phi, z):
+    """Convert cylindrical to cartesian coordinates."""
     x = rho * np.cos(phi)
     y = rho * np.sin(phi)
     return x, y, z
 
 def cyl2sph(rho, phi, z):
+    """Convert cylindrical to sphercial coordinates."""
     theta = np.arctan2(z, rho)
     r = np.sqrt(rho**2 + z**2)
     return r, phi, theta
@@ -128,7 +132,7 @@ def normalize_cyl(rho, phi, z):
 
 def normalize_sph(r, phi, theta):
     """Bring sphercial coordinates into canonical format.
-    
+
         See 'Coordinate Systems' Section of module docstring.
 
         The function works on both scalars and arrays.

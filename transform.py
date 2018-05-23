@@ -88,8 +88,8 @@
 """
 # Computer, please:
 
-import numpy as np
 from copy import deepcopy as copy
+import numpy as np
 
 import conversions as conv
 
@@ -101,7 +101,7 @@ class Vector(object):
 
         A Vector is a representation of a point (or shift, etc.) in 3D
         Euklidian space.
-        
+
         It is aware of its type of coordinate system. This can be
         - 'car' (cartesian)
         - 'sph' (spherical)
@@ -167,7 +167,7 @@ class Vector(object):
         kind = kind[:3].lower()
 
         if kind[:3] not in self._valid_kinds:
-            raise ValueError('kind must be in %s.' % str(_valid_kinds))
+            raise ValueError('kind must be in %s.' % str(self._valid_kinds))
 
         # normalize
         if kind == 'sph':
@@ -279,7 +279,7 @@ class Vector(object):
         co = copy(self.co)
         assert np.shape(a) == np.shape(co[0])
         if kind == 'car':
-            co *=  a
+            co *= a
         elif kind == 'sph':
             co[0] *= a
         elif kind == 'cyl':
@@ -303,7 +303,7 @@ class Vector(object):
         return self.__div__(a)
 
     def __truediv__(self, a):
-        return self.__div(a)
+        return self.__div__(a)
 
     def __itruediv__(self, a):
         return self.__div__(a)
@@ -330,7 +330,7 @@ class Vector(object):
 
     def dot(self, other):
         """Return inner product with another Vector.
-        
+
             If both `self` and `other` are Vector lists, shapes must match.
         """
         assert isinstance(other, Vector)
@@ -367,7 +367,7 @@ class Vector(object):
             discouraged to access it from outside as a user function.
             Use get_car(), get_sph() and get_cyl() instead unless you have
             good reason not to do so.
-        
+
             Caution
             -------
             This returns the Vector coordinates in its native kind! Make sure
@@ -435,7 +435,7 @@ class Vector(object):
             -------
             float or array of such
                 (rad) azimuth
-                
+
             History
             -------
             2018-01-04 (AA): Created
@@ -453,7 +453,7 @@ class Vector(object):
             -------
             float or array of such
                 (rad) zenith angle
-                
+
             History
             -------
             2018-01-04 (AA): Created
@@ -491,14 +491,14 @@ class Vector(object):
         if not isinstance(kind, str):
             raise TypeError('kind must be a str.')
         kind = kind[:3].lower()
-        if not kind in self._valid_kinds:
+        if kind not in self._valid_kinds:
             raise ValueError('')
         self.kind = kind
         return self
 
     def set_coords(self, co):
         """Set coordinates, unrespective of kind.
-        
+
             Caution
             -------
             This method is unaware of the coordinate kind! It does not perform
@@ -586,11 +586,11 @@ class Vector(object):
 
     # alias
     def convert_to_spheric(self):
-        return self.return_to_sph()
+        return self.convert_to_sph()
 
     # alias
     def convert_to_spherical(self):
-        return self.return_to_sph()
+        return self.convert_to_sph()
 
     # --> cylindrical
     def convert_to_cyl(self):
@@ -601,7 +601,7 @@ class Vector(object):
 
     # alias
     def convert_to_cylindrical(self):
-        return self.return_to_cyl()
+        return self.convert_to_cyl()
 
 class Rotation(object):
     """A rotation in 3D Euklidian space.
@@ -788,7 +788,7 @@ class Rotation(object):
         # shortcuts
         sin = np.sin(angle)
         cos = np.cos(angle)
-        
+
         # normalize
         norm = 1. * abs(axis)
         n = axis.get_car() / norm
@@ -796,9 +796,9 @@ class Rotation(object):
         # build rotation matrix
         first = (1 - cos) * np.outer(n, n)
         diag = cos * np.eye(3)
-        off =  sin * np.array([[   0., -n[2],  n[1]],
-                               [ n[2],    0., -n[0]],
-                               [-n[1],  n[0],   0.]])
+        off = sin * np.array([[   0., -n[2],  n[1]],
+                              [ n[2],    0., -n[0]],
+                              [-n[1],  n[0],   0.]])
         M = first + diag + off
         self.matrix = M
         return self
@@ -839,7 +839,7 @@ class Rotation(object):
 
         # vector perpendicular to u
         v = axis.cross(w)
-        
+
         # ========== magnitude =========================== #
         cos = 0.5 * (np.trace(R) - 1)
         acos = np.arccos(cos)
@@ -879,7 +879,7 @@ class Transform(object):
 
         A Transform is a coordinate transform in 3D Euklidian space. It
         includes:
-        - shift and 
+        - shift and
         - rotation
 
         It does NOT include: stretching, shearing, reflection, projection.
@@ -938,7 +938,7 @@ class Transform(object):
         s = self.shift
         R = self.rotation
         return Transform(-s, R.inverse(), shift_first=True)
-            
+
     ###################################################
     # BINARY OPERATIONS                               #
     ###################################################
@@ -953,11 +953,11 @@ class Transform(object):
         a = self.shift
         B = other.rotation
         b = other.shift
-        
+
         shift = A.dot(b) + a
         rotation = A.dot(B)
         return Transform(shift, rotation)
-    
+
     def before(self, other):
         """Return combined Transfrom."""
         return other.after(self)
