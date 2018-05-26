@@ -181,6 +181,50 @@ class Vector(object):
         self.kind = kind
         self.co = co
 
+    @classmethod
+    def from_azimuth_and_zenith_angle(cls, co=np.zeros(3)):
+        """Initialize with meteorological angles.
+        
+            Parameters
+            ----------
+            co : array-like, first dimensions must be 3
+                first dimension is interpreted as three coordinate axes
+                (r, azimuth, zenith angle)
+                azimuth is measurued clockwise (!) in the x-y-plane, starting
+                at the positive y-axis (!).
+                zenith angle is the distance to the positive z-axis.
+        """
+        r = co[0]
+        azi = co[1]
+        za = co[2]
+
+        phi = np.pi/2 - azi
+        theta = np.pi/2 - za
+        co_new = np.array((r, phi, theta))
+        return cls(co_new, kind='sph')
+
+    @classmethod
+    def from_azimuth_and_view_angle(cls, co=np.zeros(3)):
+        """Initialize with meteorological angles.
+        
+            Parameters
+            ----------
+            co : array-like, first dimensions must be 3
+                first dimension is interpreted as three coordinate axes
+                (r, azimuth, view angle)
+                azimuth is measurued clockwise (!) in the x-y-plane, starting
+                at the positive y-axis (!).
+                view angle is the distance to the negative z-axis.
+        """
+        r = co[0]
+        azi = co[1]
+        va = co[2]
+
+        phi = np.pi/2 - azi
+        theta = va - np.pi/2
+        co_new = np.array((r, phi, theta))
+        return cls(co_new, kind='sph')
+
     def __repr__(self):
         """Return string representation."""
         # kind
@@ -427,39 +471,18 @@ class Vector(object):
             The azimuth angle is measured in the x-y-plane, starting at the
             y-axis towards the positive x-axis, i. e. the angle is measured in
             mathematically negative sense.
-
-            Parameters
-            ----------
-
-            Returns
-            -------
-            float or array of such
-                (rad) azimuth
-
-            History
-            -------
-            2018-01-04 (AA): Created
         """
         co = self.get_car()
         return np.arctan2(co[0], co[1])
 
     def get_zenith_angle(self):
-        """Return zenith angle (distance from z-axis) in rad.
-
-            Parameters
-            ----------
-
-            Returns
-            -------
-            float or array of such
-                (rad) zenith angle
-
-            History
-            -------
-            2018-01-04 (AA): Created
-        """
+        """Return zenith angle (distance from z-axis) in rad."""
         theta = self.get_sph()[2]
         return np.pi/2. - theta
+
+    def get_view_angle(self):
+        """Return view angle (distance from negative z-axis) in rad."""
+        return np.pi - self.get_zenith_angle()
 
     ###################################################
     # GETTERS: ARRAY                                  #
